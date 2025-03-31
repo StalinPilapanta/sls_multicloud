@@ -23,7 +23,7 @@ Actions:
         - name: Install Library
         - uses: actions/github-script@v2.1.0
           with:
-            script: 'yarn install'
+            script: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash source ~/.nvm/nvm.sh && nvm install node && npm install --global yarn'
         - name: Deploy to Azure Functions
           uses: serverless/github-action@v3.2
           with:
