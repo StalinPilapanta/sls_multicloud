@@ -1,0 +1,56 @@
+service: sls-nodejs-multicloud-example
+configValidationMode: off
+
+provider:
+  name: azure
+  resourceGroup: rg-stg-fn
+  location: ${env:AZURE_LOCATION, 'East Us'}
+  runtime: nodejs14
+  apim:
+    apis:
+      - name: v1
+        displayName: v1
+        description: An example NodeJS function using @multicloud deployed by Serverless Framework
+        protocols:
+          - https
+        path: v1
+        subscriptionRequired: false
+        authorization: none
+
+plugins:
+  - serverless-azure-functions
+  - serverless-webpack
+
+functions:
+  hello:
+    handler: src/handlers/hello.sayHello
+    apim:
+      api: v1
+      operations:
+        - method: get
+          urlTemplate: /hello
+          displayName: Hello
+    events:
+      - http: true
+        x-azure-settings:
+          methods:
+            - GET
+          authLevel: anonymous
+  goodbye:
+    handler: src/handlers/goodbye.sayGoodbye
+    apim:
+      api: v1
+      operations:
+        - method: get
+          urlTemplate: /goodbye
+          displayName: Goodbye
+    events:
+      - http: true
+        x-azure-settings:
+          methods:
+            - GET
+          authLevel: anonymous
+custom:
+  webpack:
+    packager: "yarn"
+    includeModules: true

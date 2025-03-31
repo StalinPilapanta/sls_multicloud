@@ -1,0 +1,31 @@
+service: sls-nodejs-multicloud-example
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ${env:AWS_REGION, 'us-east-1'}
+  lambdaHashingVersion: 20201221
+  stage: api
+
+plugins:
+  - serverless-offline
+  - serverless-webpack
+
+functions:
+  hello:
+    handler: src/handlers/hello.sayHello
+    events:
+      - http:
+          method: GET
+          path: /hello
+  goodbye:
+    handler: src/handlers/goodbye.sayGoodbye
+    events:
+      - http:
+          method: GET
+          path: /goodbye
+
+custom:
+  webpack:
+    packager: "yarn"
+    includeModules: true
