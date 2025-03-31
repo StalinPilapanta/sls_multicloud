@@ -27,10 +27,10 @@ Actions:
                   yarn deploy:azure"
                 entrypoint: /bin/sh
               env:
-                AZURE_SUBSCRIPTION_ID: ${Secrets.SUBSCRIPTION_ID}
-                AZURE_TENANT_ID: ${Secrets.TENANT_ID}
-                AZURE_CLIENT_ID: ${Secrets.CLIENT_ID}
-                AZURE_CLIENT_SECRET: ${Secrets.CLIENT_SECRET}
+                AZURE_SUBSCRIPTION_ID: ${Secrets.AZURE_SUBSCRIPTION_ID}
+                AZURE_TENANT_ID: ${Secrets.AZURE_TENANT_ID}
+                AZURE_CLIENT_ID: ${Secrets.AZURE_CLIENT_ID}
+                AZURE_CLIENT_SECRET: ${Secrets.AZURE_CLIENT_SECRET}
                 SLS_DEPRECATION_DISABLE: '*'
       Test:
         DependsOn:
