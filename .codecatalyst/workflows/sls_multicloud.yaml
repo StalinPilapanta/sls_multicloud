@@ -1,0 +1,54 @@
+Name: sls_multicloud
+Compute:
+  Type: EC2
+  Fleet: Linux.x86-64.Large
+  SharedInstance: true
+SchemaVersion: "1.0"
+
+# Optional - Set automatic triggers.
+Triggers:
+  - Type: Push
+    Branches:
+      - main
+
+# Required - Define action configurations.
+Actions:
+      Deploy:
+        Inputs:
+          Sources:
+            - WorkflowSource
+        Identifier: aws/github-actions-runner@v1.0.0
+        Configuration:
+          Steps:
+            - name: Deploy to Azure Functions
+              uses: serverless/github-action@v3.2
+              with:
+                args: -c "serverless plugin install --name serverless-azure-functions &&
+                  yarn deploy:azure"
+                entrypoint: /bin/sh
+              env:
+                AZURE_SUBSCRIPTION_ID: ${Secrets.SUBSCRIPTION_ID}
+                AZURE_TENANT_ID: ${Secrets.TENANT_ID}
+                AZURE_CLIENT_ID: ${Secrets.CLIENT_ID}
+                AZURE_CLIENT_SECRET: ${Secrets.CLIENT_SECRET}
+                SLS_DEPRECATION_DISABLE: '*'
+      Test:
+        DependsOn:
+            - Deploy
+        Identifier: aws/github-actions-runner@v1.0.0
+        Configuration:
+          Steps:
+            - name: Test Function
+              uses: serverless/github-action@v3.2
+              with:
+                args: | 
+                    -c "serverless plugin install --name serverless-azure-functions && \
+                        serverless invoke -f hello -d '{\"name\": \"CodeCatalyst\"}' && \
+                        serverless invoke -f goodbye -d '{\"name\": \"CodeCatalyst\"}'"
+                entrypoint: /bin/sh
+              env:
+                AZURE_SUBSCRIPTION_ID: ${Secrets.SUBSCRIPTION_ID}
+                AZURE_TENANT_ID: ${Secrets.TENANT_ID}
+                AZURE_CLIENT_ID: ${Secrets.CLIENT_ID}
+                AZURE_CLIENT_SECRET: ${Secrets.CLIENT_SECRET}
+                SLS_DEPRECATION_DISABLE: '*'
